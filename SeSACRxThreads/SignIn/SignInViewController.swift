@@ -86,7 +86,7 @@ class SignInViewController: UIViewController {
         
         signInButton.rx.tap
             .subscribe(with: self) { owner, value in
-                print("select")
+                owner.navigationController?.pushViewController(SearchViewController(), animated: true)
             }
             .disposed(by: disposeBag)
         

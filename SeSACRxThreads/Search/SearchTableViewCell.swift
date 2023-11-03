@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class SearchTableViewCell: UITableViewCell {
     
@@ -37,6 +39,8 @@ final class SearchTableViewCell: UITableViewCell {
         return button
     }()
     
+    var disposeBag = DisposeBag()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -46,6 +50,12 @@ final class SearchTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()   //disposeBag 갈아끼우면서 메모리 정리해주기
     }
     
     private func configure() {

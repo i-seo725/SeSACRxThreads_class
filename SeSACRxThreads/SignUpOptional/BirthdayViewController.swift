@@ -68,13 +68,7 @@ class BirthdayViewController: UIViewController {
   
     let nextButton = PointButton(title: "가입하기")
     
-    
-    let birthDay = BehaviorSubject(value: Date.now)
-    
-    let year = BehaviorSubject(value: 2020)
-    let month = BehaviorSubject(value: 12)
-    let day = BehaviorSubject(value: 11)
-    
+    let viewModel = BirthdayViewModel()
     let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -95,23 +89,10 @@ class BirthdayViewController: UIViewController {
     func bind() {
         
         birthDayPicker.rx.date
-            .bind(to: birthDay)
+            .bind(to: viewModel.birthDay)
             .disposed(by: disposeBag)
         
-        
-        birthDay
-            .subscribe(with: self) { owner, date in
-                let component = Calendar.current.dateComponents([.year, .month, .day], from: date)
-                owner.year.onNext(component.year!)
-                owner.month.onNext(component.month!)
-                owner.day.onNext(component.day!)
-            } onDisposed: { owner in
-                print("Disposed - Birthday")
-            }
-//            .dispose()  //즉시 리소스 정리 = 구독 해제 = 메모리에서 정리 = 더 이상 코드 동작하지 않음
-            .disposed(by: disposeBag)
-        
-        year
+        viewModel.year
             .observe(on: MainScheduler.instance) //Scheduler : GCD, 메인 쓰레드에서 동작하게 만듦
             .subscribe(with: self) { owner, value in
                 owner.yearLabel.text = "\(value)년"
@@ -120,7 +101,7 @@ class BirthdayViewController: UIViewController {
             }
             .disposed(by: disposeBag)
      
-        month
+        viewModel.month
             .map { "\($0)월"}
             .observe(on: MainScheduler.instance) //Scheduler : GCD, 메인 쓰레드에서 동작하게 만듦
             .subscribe(with: self) { owner, value in
@@ -130,7 +111,7 @@ class BirthdayViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        day
+        viewModel.day
             .map { "\($0)일" }
             .bind(to: dayLabel.rx.text) //rxCocoa? 메인 쓰레드에서 동작함, 아닐 때도 있는데 여기선 메인에서 동작
             .disposed(by: disposeBag)
